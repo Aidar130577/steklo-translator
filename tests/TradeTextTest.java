@@ -32,6 +32,15 @@ public class TradeTextTest {
         check(!TradeText.english("12 cm"));
         check(TradeText.english("Shop"));
         check(TradeText.exact("Buy now").equals("Купить сейчас"));
+        check(TradeText.exact("全店总售79.3万+件").equals("Продано 793000+ шт."));
+        check(TradeText.exact("库存剩8件 免拼购买").equals("Ост. 8 шт. · Купить"));
+        check(TradeText.exact("商品评价(255)").equals("Отзывы (255)"));
+        check(TradeText.exact("差10人").equals("Нужно ещё 10 чел."));
+        check(TradeText.exact("一周内100+人买过").equals("За неделю купили 100+"));
+        check(TradeText.acceptTranslation("库存8件","Осталось 8 шт."));
+        check(!TradeText.acceptTranslation("库存8件","Осталось 9 шт."));
+        check(!TradeText.acceptTranslation("衣服","衣服 одежда"));
+        check(!TradeText.acceptTranslation("衣服",null));
         System.out.println("PASS: "+count+" checks");
     }
 }

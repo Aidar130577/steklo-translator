@@ -14,3 +14,6 @@ Fix multiline layout and avoid invalidation from non-Chinese timer changes; show
 
 ### 0.1.4
 Adds English-to-Russian heuristic and separate local model, diagnostic long press on power button, fallback to active application root if own overlay is returned, fixes WrongConstant lint. Not a verified on-device fix. No new paid services. Language heuristic is limited to Chinese and English; Latin brand names may be translated.
+
+### 0.1.6
+Bounded 3-task translation queue, immediate cached text, OCR reuse for unchanged accessible content, more precise OCR deduplication, merchant glossary and count templates, reject untranslated Han in ML output, vector power icon. Runtime quality/speed not yet measured. Longer translations may still not fit.

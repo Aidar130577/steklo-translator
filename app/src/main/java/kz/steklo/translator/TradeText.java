@@ -13,6 +13,23 @@ public final class TradeText {
     private static final Map<String,String> TERMS = new java.util.HashMap<>();
     static {
         TERMS.put("包邮","Бесплатная доставка");
+        TERMS.put("颜色款式","Цвет / модель");
+        TERMS.put("颜色\n款式","Цвет / модель");
+        TERMS.put("快抢光","Почти раскуплено");
+        TERMS.put("先用后付","Сначала товар, потом оплата");
+        TERMS.put("先用后付 | 支持0元下单，确认收货后再付款","Заказ за 0 юаней, оплата после получения");
+        TERMS.put("无需等待","Без ожидания");
+        TERMS.put("直接拼成","Купить совместно сразу");
+        TERMS.put("一次下单多款","Несколько моделей в заказе");
+        TERMS.put("48小时内发货","Отправка за 48 ч");
+        TERMS.put("查看全部","Смотреть все");
+        TERMS.put("店铺","Магазин");
+        TERMS.put("收藏","Избранное");
+        TERMS.put("客服","Поддержка");
+        TERMS.put("免拼购买","Купить без группы");
+        TERMS.put("店铺回购率超95%同行，这些人已拼","Доля повторных покупок выше, чем у 95% аналогичных магазинов. Эти покупатели уже участвуют.");
+        TERMS.put("畅销榜","Бестселлеры");
+        TERMS.put("7天无理由退货 · 48小时内发货 · 全场包邮 · 先用后付","Возврат 7 дней · Отправка за 48 ч · Бесплатная доставка · Оплата после получения");
         TERMS.put("Free shipping","Бесплатная доставка");
         TERMS.put("Buy now","Купить сейчас");
         TERMS.put("Add to cart","В корзину");
@@ -69,7 +86,30 @@ public final class TradeText {
     public static boolean chinese(String s) { return s!=null && HAN.matcher(s).find(); }
     public static boolean english(String s){return s!=null&&!chinese(s)&&!s.matches("(?s).*\\p{IsCyrillic}.*")&&s.matches("(?s).*[A-Za-z]{2,}.*")&&!s.matches("^(?:[A-Z]{2,5}|[0-9]+\\s*(?i:cm|mm|kg|gb|mb|mah|w|v))$");}
     public static boolean candidate(String s){return s!=null&&(chinese(s)||english(s)||PRICE.matcher(s.trim()).matches());}
-    public static String exact(String s) { return s==null?null:TERMS.get(s.trim()); }
+    public static String exact(String s) {
+        if(s==null)return null;
+        String key=s.trim();String direct=TERMS.get(key);if(direct!=null)return direct;
+        Matcher m=Pattern.compile("^商品评价\\(([0-9,]+)\\)$").matcher(key);
+        if(m.matches())return "Отзывы ("+m.group(1)+")";
+        m=Pattern.compile("^库存剩([0-9]+)件\\s*免拼购买$").matcher(key);
+        if(m.matches())return "Ост. "+m.group(1)+" шт. · Купить";
+        m=Pattern.compile("^库存剩([0-9]+)件$").matcher(key);
+        if(m.matches())return "Осталось "+m.group(1)+" шт.";
+        m=Pattern.compile("^差([0-9]+)人$").matcher(key);
+        if(m.matches())return "Нужно ещё "+m.group(1)+" чел.";
+        m=Pattern.compile("^([0-9]+)人好评$").matcher(key);
+        if(m.matches())return m.group(1)+" хороших отзывов";
+        m=Pattern.compile("^([0-9]+)人收藏$").matcher(key);
+        if(m.matches())return "В избранном у "+m.group(1);
+        m=Pattern.compile("^全店总售([0-9]+(?:\\.[0-9]+)?)万(\\+?)件$").matcher(key);
+        if(m.matches())return "Продано "+new BigDecimal(m.group(1)).multiply(new BigDecimal("10000")).stripTrailingZeros().toPlainString()+m.group(2)+" шт.";
+        m=Pattern.compile("^一周内([0-9]+)(\\+?)人买过$").matcher(key);
+        if(m.matches())return "За неделю купили "+m.group(1)+m.group(2);
+        return null;
+    }
+    public static boolean acceptTranslation(String source,String value){
+        return value!=null&&!value.trim().isEmpty()&&!chinese(value)&&numbersPreserved(source,value);
+    }
     public static BigDecimal parseRate(String s) {
         if(s==null||!s.trim().matches("[0-9]{1,6}([.,][0-9]{1,6})?"))throw new IllegalArgumentException("Некорректный формат курса");
         BigDecimal r=new BigDecimal(s.trim().replace(',','.'));
