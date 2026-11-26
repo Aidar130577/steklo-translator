@@ -13,6 +13,13 @@ public final class TradeText {
     private static final Map<String,String> TERMS = new java.util.HashMap<>();
     static {
         TERMS.put("包邮","Бесплатная доставка");
+        TERMS.put("Free shipping","Бесплатная доставка");
+        TERMS.put("Buy now","Купить сейчас");
+        TERMS.put("Add to cart","В корзину");
+        TERMS.put("Reviews","Отзывы");
+        TERMS.put("View all","Посмотреть все");
+        TERMS.put("In stock","В наличии");
+        TERMS.put("Shop","Магазин");
         TERMS.put("退货包运费","Доставка при возврате покрывается");
         TERMS.put("7天无理由退货","Возврат за 7 дней без объяснения причин");
         TERMS.put("24小时内发货","Отправка в течение 24 часов");
@@ -60,7 +67,8 @@ public final class TradeText {
     private static final Pattern PRICE=Pattern.compile("^(?:[¥￥]\\s*("+AMOUNT+")|("+AMOUNT+")\\s*元)$");
     private static final Pattern NUM=Pattern.compile("[0-9]+(?:[.,][0-9]+)?");
     public static boolean chinese(String s) { return s!=null && HAN.matcher(s).find(); }
-    public static boolean candidate(String s){return s!=null&&(chinese(s)||PRICE.matcher(s.trim()).matches());}
+    public static boolean english(String s){return s!=null&&!chinese(s)&&!s.matches("(?s).*\\p{IsCyrillic}.*")&&s.matches("(?s).*[A-Za-z]{2,}.*")&&!s.matches("^(?:[A-Z]{2,5}|[0-9]+\\s*(?i:cm|mm|kg|gb|mb|mah|w|v))$");}
+    public static boolean candidate(String s){return s!=null&&(chinese(s)||english(s)||PRICE.matcher(s.trim()).matches());}
     public static String exact(String s) { return s==null?null:TERMS.get(s.trim()); }
     public static BigDecimal parseRate(String s) {
         if(s==null||!s.trim().matches("[0-9]{1,6}([.,][0-9]{1,6})?"))throw new IllegalArgumentException("Некорректный формат курса");

@@ -11,3 +11,6 @@ APK: app/build/outputs/apk/debug/app-debug.apk. GitHub Actions: Android debug AP
 
 ### 0.1.3
 Fix multiline layout and avoid invalidation from non-Chinese timer changes; show model loading/error status. Amber during loading/error, green only once ready, red off. Long translations that do not fit remain original. Real Pinduoduo tests pending; timer-related starvation is a code-level risk, not a proven device diagnosis.
+
+### 0.1.4
+Adds English-to-Russian heuristic and separate local model, diagnostic long press on power button, fallback to active application root if own overlay is returned, fixes WrongConstant lint. Not a verified on-device fix. No new paid services. Language heuristic is limited to Chinese and English; Latin brand names may be translated.

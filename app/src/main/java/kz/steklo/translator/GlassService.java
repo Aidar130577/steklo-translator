@@ -27,7 +27,10 @@ public final class GlassService extends AccessibilityService {
     private SharedPreferences prefs;
     private WindowManager wm;
     private Layer layer;
-    private Translator translator;
+    private Translator translator, englishTranslator;
+    private boolean englishReady, englishLoading, englishError;
+    private int nodeCount, ocrCount, shownCount;
+    private String ocrStatus="не запускался";
     private TextRecognizer recognizer;
     private boolean ready, loading, busy, alive;
     private long generation, lastOcr;
@@ -45,6 +48,7 @@ public final class GlassService extends AccessibilityService {
     @Override protected void onServiceConnected(){
         super.onServiceConnected(); alive=true; prefs=getSharedPreferences("glass",MODE_PRIVATE); wm=(WindowManager)getSystemService(WINDOW_SERVICE);
         translator=Translation.getClient(new TranslatorOptions.Builder().setSourceLanguage(TranslateLanguage.CHINESE).setTargetLanguage(TranslateLanguage.RUSSIAN).build());
+        englishTranslator=Translation.getClient(new TranslatorOptions.Builder().setSourceLanguage(TranslateLanguage.ENGLISH).setTargetLanguage(TranslateLanguage.RUSSIAN).build());
         recognizer=TextRecognition.getClient(new ChineseTextRecognizerOptions.Builder().build());
         // Old versions persisted "enabled". Always require an explicit tap in the current app.
         prefs.edit().remove("enabled").apply();
@@ -70,11 +74,22 @@ public final class GlassService extends AccessibilityService {
     private String foreground(){
         if(!alive||!unlocked())return "";
         AccessibilityNodeInfo root=null;
-        try{root=getRootInActiveWindow();return root==null?"":String.valueOf(root.getPackageName());}
+        try{root=appRoot();return root==null?"":String.valueOf(root.getPackageName());}
         catch(RuntimeException e){return "";}finally{if(root!=null)root.recycle();}
     }
+    private AccessibilityNodeInfo appRoot(){
+        AccessibilityNodeInfo r=getRootInActiveWindow();
+        if(r!=null&&!getPackageName().contentEquals(r.getPackageName()==null?"":r.getPackageName()))return r;
+        if(r!=null)r.recycle();
+        AccessibilityNodeInfo found=null;
+        for(AccessibilityWindowInfo w:getWindows()){
+            try{if(found==null&&w.getType()==AccessibilityWindowInfo.TYPE_APPLICATION&&(w.isActive()||w.isFocused()))found=w.getRoot();}
+            finally{w.recycle();}
+        }
+        return found;
+    }
     private void stopWork(){
-        generation++;lastFingerprint="";pending=false;h.removeCallbacks(scanTask);scheduledAt=Long.MAX_VALUE;
+        generation++;lastFingerprint="";nodeCount=0;ocrCount=0;shownCount=0;ocrStatus="не запускался";pending=false;h.removeCallbacks(scanTask);scheduledAt=Long.MAX_VALUE;
         h.removeCallbacks(modelRetry);clear();
     }
     private void syncForeground(){
@@ -97,6 +112,7 @@ public final class GlassService extends AccessibilityService {
             else {session.start();stopWork();updatePower();loadModel();schedule(0);
                 if(!ready)android.widget.Toast.makeText(this,"Подготовка языковой модели. Первый запуск требует интернет.",android.widget.Toast.LENGTH_SHORT).show();}
         });
+        v.setOnLongClickListener(w->{android.widget.Toast.makeText(this,"Китайский: "+(ready?"готов":loading?"загрузка":modelError?"ошибка":"не загружен")+"; английский: "+(englishReady?"готов":englishLoading?"загрузка":englishError?"ошибка":"не загружен")+"\nТекст: "+nodeCount+"; OCR: "+ocrCount+" ("+ocrStatus+"); показано: "+shownCount,android.widget.Toast.LENGTH_LONG).show();return true;});
         WindowManager.LayoutParams p=new WindowManager.LayoutParams(dp(44),dp(44),WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,PixelFormat.TRANSLUCENT);
         p.gravity=Gravity.TOP|Gravity.LEFT;p.x=dp(6);p.y=dp(6);wm.addView(v,p);power=v;
@@ -104,18 +120,28 @@ public final class GlassService extends AccessibilityService {
     private void updatePower(){
         if(power==null)return;
         boolean on=enabled();
-        String state=!on?"off":ready?"ready":modelError?"error":"loading";
+        boolean allReady=ready&&englishReady;
+        String state=!on?"off":allReady?"ready":(modelError||englishError)?"error":"loading";
         if(state.equals(power.getTag()))return;
-        power.setTag(state);power.setText(on&&!ready?(modelError?"!":"…"):"⏻");
+        power.setTag(state);power.setText(on&&!allReady?((modelError||englishError)?"!":"…"):"⏻");
         android.graphics.drawable.GradientDrawable bg=new android.graphics.drawable.GradientDrawable();
         bg.setShape(android.graphics.drawable.GradientDrawable.OVAL);
-        bg.setColor(!on?Color.rgb(190,30,45):ready?Color.rgb(22,163,74):Color.rgb(190,120,0));bg.setStroke(dp(2),Color.WHITE);
-        power.setBackground(bg);power.setContentDescription(!on?"Начать перевод":ready?"Остановить перевод":modelError?"Ошибка загрузки модели. Нажмите, чтобы остановить.":"Загрузка модели. Нажмите, чтобы остановить.");
+        bg.setColor(!on?Color.rgb(190,30,45):allReady?Color.rgb(22,163,74):Color.rgb(190,120,0));bg.setStroke(dp(2),Color.WHITE);
+        power.setBackground(bg);power.setContentDescription(!on?"Начать перевод":allReady?"Остановить перевод":(modelError||englishError)?"Ошибка загрузки модели. Нажмите, чтобы остановить.":"Загрузка модели. Нажмите, чтобы остановить.");
     }
     private void removePower(){
         if(power!=null){try{wm.removeViewImmediate(power);}catch(RuntimeException ignored){}power=null;}
     }
     private void loadModel(){
+        loadChineseModel();
+        if(!enabled()||englishReady||englishLoading||englishTranslator==null)return;
+        englishLoading=true;englishError=false;updatePower();
+        try{englishTranslator.downloadModelIfNeeded().addOnCompleteListener(t->{
+            englishLoading=false;if(!alive)return;englishReady=t.isSuccessful();englishError=!englishReady;updatePower();
+            if(enabled()){if(englishReady)schedule(0);else {h.removeCallbacks(modelRetry);h.postDelayed(modelRetry,30000);}}
+        });}catch(RuntimeException e){englishLoading=false;englishError=true;updatePower();if(enabled()){h.removeCallbacks(modelRetry);h.postDelayed(modelRetry,30000);}}
+    }
+    private void loadChineseModel(){
         if(!enabled()||ready||loading||translator==null)return; loading=true;modelError=false;updatePower();
         try{translator.downloadModelIfNeeded().addOnCompleteListener(t->{loading=false;if(!alive)return;ready=t.isSuccessful();modelError=!ready;updatePower();if(ready)schedule(0);else if(enabled()){android.widget.Toast.makeText(this,"Не удалось загрузить модель перевода. Проверьте интернет. Повтор через 30 секунд.",android.widget.Toast.LENGTH_LONG).show();h.removeCallbacks(modelRetry);h.postDelayed(modelRetry,30000);}});}catch(RuntimeException e){loading=false;modelError=true;updatePower();h.postDelayed(modelRetry,30000);}
     }
@@ -136,7 +162,7 @@ public final class GlassService extends AccessibilityService {
         if(at>=scheduledAt)return;h.removeCallbacks(scanTask);scheduledAt=at;h.postAtTime(scanTask,at);}
     private void refreshKnown(boolean scrolled){
         AccessibilityNodeInfo root=null;
-        try{root=getRootInActiveWindow();
+        try{root=appRoot();
             if(root==null||!session.isCurrent(String.valueOf(root.getPackageName()))){clear();return;}
             List<Item> items=new ArrayList<>();boolean[] sensitive={false};collect(root,items,sensitive,new int[]{0});
             if(sensitive[0]){invalidatePage();return;}
@@ -166,16 +192,17 @@ public final class GlassService extends AccessibilityService {
         if(!enabled()){clear();return;} if(busy){pending=true;return;}
         AccessibilityNodeInfo root=null;
         try{
-            root=getRootInActiveWindow(); if(root==null){invalidatePage();return;}
+            root=appRoot(); if(root==null){invalidatePage();return;}
             String pkg=String.valueOf(root.getPackageName()); int win=root.getWindowId();
             if(!session.isCurrent(pkg)){invalidatePage();lastPackage="";lastWindow=-1;return;}
             if(!pkg.equals(lastPackage)||win!=lastWindow){invalidatePage();lastPackage=pkg;lastWindow=win;}
             List<Item> items=new ArrayList<>(); boolean[] sensitive={false}; collect(root,items,sensitive,new int[]{0});
             if(sensitive[0]){invalidatePage();return;}
+            nodeCount=items.size();
             lastFingerprint=fingerprint(win,items);
             long token=++generation; busy=true; pending=false;
             if(Build.VERSION.SDK_INT>=34&&!hasFocusedEditor(root)&&SystemClock.uptimeMillis()-lastOcr>=1300){
-                Rect bounds=windowBounds(win); if(bounds!=null){lastOcr=SystemClock.uptimeMillis(); capture(win,bounds,items,token);return;}
+                Rect bounds=windowBounds(win); if(bounds!=null){lastOcr=SystemClock.uptimeMillis();ocrStatus="считывание"; capture(win,bounds,items,token);return;}
             }
             resolve(items,token);
         }catch(RuntimeException e){clear();if(busy)finish();}
@@ -202,7 +229,7 @@ public final class GlassService extends AccessibilityService {
     @android.annotation.TargetApi(34)
     private void capture(int win,Rect bounds,List<Item> items,long token){
         try{takeScreenshotOfWindow(win,getMainExecutor(),new TakeScreenshotCallback(){
-            @Override public void onFailure(int error){if(token!=generation){finish();return;}if(error==ERROR_TAKE_SCREENSHOT_SECURE_WINDOW){invalidatePage();finish();}else resolve(items,token);}
+            @Override public void onFailure(int error){ocrStatus="код "+error;if(token!=generation){finish();return;}if(error==ERROR_TAKE_SCREENSHOT_SECURE_WINDOW){invalidatePage();finish();}else resolve(items,token);}
             @Override public void onSuccess(ScreenshotResult result){
                 Bitmap bmp=null;
                 try{if(!alive||token!=generation){finish();return;}
@@ -214,6 +241,7 @@ public final class GlassService extends AccessibilityService {
                 final Bitmap image=bmp;
                 try{recognizer.process(InputImage.fromBitmap(image,0)).addOnCompleteListener(t->{
                     try{if(!alive||token!=generation){finish();return;}
+                        ocrStatus=t.isSuccessful()?"готов":"ошибка";ocrCount=0;
                         if(t.isSuccessful()){
                             float sx=(float)bounds.width()/image.getWidth(),sy=(float)bounds.height()/image.getHeight();
                             boolean sensitive=false;
@@ -222,7 +250,7 @@ public final class GlassService extends AccessibilityService {
                                 Rect r=block.getBoundingBox();if(r==null||s.length()>1000||items.size()>=80||!TradeText.candidate(s))continue;
                                 Rect screen=new Rect(bounds.left+Math.round(r.left*sx),bounds.top+Math.round(r.top*sy),bounds.left+Math.round(r.right*sx),bounds.top+Math.round(r.bottom*sy));
                                 boolean overlap=false;for(Item i:items)if(Rect.intersects(i.rect,screen)){overlap=true;break;}
-                                if(!overlap)items.add(new Item(s,screen,null));
+                                if(!overlap){items.add(new Item(s,screen,null));ocrCount++;}
                             }
                             if(sensitive){invalidatePage();finish();return;}
                         }
@@ -239,14 +267,14 @@ public final class GlassService extends AccessibilityService {
         Set<String> seen=new HashSet<>();
         for(Item i:items){if(!seen.add(i.source+"@"+i.rect.toShortString()))continue;
             String s=knownText(i.source,rate);
-            if(s!=null)done.add(new Item(i.source,i.rect,s));else if(ready&&TradeText.chinese(i.source))missing.add(i);}
+            if(s!=null)done.add(new Item(i.source,i.rect,s));else if((ready&&TradeText.chinese(i.source))||(englishReady&&TradeText.english(i.source)))missing.add(i);}
         publish(done,token); translateNext(missing,0,done,token);
     }
     private void translateNext(List<Item> missing,int index,List<Item> done,long token){
         if(!alive||token!=generation||index>=missing.size()){finish();return;}
         Item i=missing.get(index); String cached=cache.get(i.source);
         if(cached!=null){done.add(new Item(i.source,i.rect,cached));publish(done,token);h.post(()->translateNext(missing,index+1,done,token));return;}
-        try{translator.translate(i.source).addOnCompleteListener(t->{
+        try{Translator engine=TradeText.chinese(i.source)?translator:englishTranslator;engine.translate(i.source).addOnCompleteListener(t->{
             if(!alive){finish();return;}
             if(t.isSuccessful()){String s=t.getResult();if(s!=null&&!s.trim().isEmpty()&&TradeText.numbersPreserved(i.source,s)){cache.put(i.source,s);if(token==generation){done.add(new Item(i.source,i.rect,s));publish(done,token);}}}
             if(token!=generation){finish();return;}
@@ -255,14 +283,14 @@ public final class GlassService extends AccessibilityService {
     }
     private void publish(List<Item> done,long token){
         if(!enabled()||token!=generation||!session.isCurrent(foreground()))return;
-        try{ensureLayer();layer.items=new ArrayList<>(done);layer.invalidate();}catch(RuntimeException e){clear();}
+        try{ensureLayer();layer.items=new ArrayList<>(done);shownCount=done.size();layer.invalidate();}catch(RuntimeException e){clear();}
     }
     private void finish(){busy=false;if(!alive)return;if(pending){pending=false;schedule(60);}else if(enabled())schedule(1500);}
     @Override public void onInterrupt(){session.stop();stopWork();updatePower();}
     @Override public void onDestroy(){alive=false;generation++;h.removeCallbacksAndMessages(null);if(prefs!=null&&listener!=null)prefs.unregisterOnSharedPreferenceChangeListener(listener);
         session.stop();removePower();if(screenReceiver!=null){try{unregisterReceiver(screenReceiver);}catch(RuntimeException ignored){}screenReceiver=null;}
         if(layer!=null){try{wm.removeViewImmediate(layer);}catch(RuntimeException ignored){}layer=null;}
-        if(translator!=null)translator.close();if(recognizer!=null)recognizer.close();cache.evictAll();super.onDestroy();}
+        if(translator!=null)translator.close();if(englishTranslator!=null)englishTranslator.close();if(recognizer!=null)recognizer.close();cache.evictAll();super.onDestroy();}
     private final class Layer extends View {
         List<Item> items=Collections.emptyList(); final Paint paint=new Paint(Paint.ANTI_ALIAS_FLAG); final int[] offset=new int[2];
         Layer(){super(GlassService.this);setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);}
@@ -276,7 +304,7 @@ public final class GlassService extends AccessibilityService {
                 for(float size=max;size>=min;size-=.5f){
                     tp.setTextSize(size);
                     android.text.StaticLayout candidate=android.text.StaticLayout.Builder.obtain(i.result,0,i.result.length(),tp,width)
-                        .setIncludePad(false).setLineSpacing(0,1f).setBreakStrategy(android.text.Layout.BREAK_STRATEGY_SIMPLE).build();
+                        .setIncludePad(false).setLineSpacing(0,1f).setBreakStrategy(android.graphics.text.LineBreaker.BREAK_STRATEGY_SIMPLE).build();
                     if(candidate.getHeight()<=r.height()){layout=candidate;break;}
                 }
                 if(layout==null)continue; // Keep the original rather than truncate numbers or words.

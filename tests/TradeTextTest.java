@@ -24,6 +24,14 @@ public class TradeTextTest {
         check(TradeText.convert(null,rate)==null);check(TradeText.convert("¥10",java.math.BigDecimal.ZERO)==null);
         check(TradeText.convert("¥0.01",rate).equals("¥0.01 ≈ 1 ₸"));check(TradeText.convert("¥10.001",rate)==null);
         for(String invalid:new String[]{"1e2","+1","1E+999999999","9999999","1,2,3",null}){boolean rejected=false;try{TradeText.parseRate(invalid);}catch(RuntimeException e){rejected=true;}check(rejected);}
+        check(TradeText.english("Free shipping"));
+        check(TradeText.candidate("Customer reviews"));
+        check(!TradeText.english("Отзывы покупателей"));
+        check(!TradeText.english("中国商品"));
+        check(!TradeText.english("12345"));
+        check(!TradeText.english("12 cm"));
+        check(TradeText.english("Shop"));
+        check(TradeText.exact("Buy now").equals("Купить сейчас"));
         System.out.println("PASS: "+count+" checks");
     }
 }
