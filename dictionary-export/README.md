@@ -1,0 +1,1 @@
+Derived dictionary data from FreeDict / WikDict / Wiktionary. Original source archives and exact license notices are listed in manifest.json. Normalized translation equivalents; multiple meanings preserved; no guarantee of contextual correctness. Redistribution subject to source license notices.

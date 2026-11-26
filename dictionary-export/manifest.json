@@ -1,0 +1,573 @@
+{
+  "version": "2025.11.23",
+  "sources": [
+    {
+      "pair": "zho-rus",
+      "lang": "zh",
+      "source_id": "freedict_zho-rus_2025.11.23",
+      "url": "https://download.freedict.org/dictionaries/zho-rus/2025.11.23/freedict-zho-rus-2025.11.23.src.tar.xz",
+      "sha512": "31a1b14fcd6592ea2f46eaee473b2343a29f9638db8f196353773b5ceeae33db0c93bda9fff3928f89985b5ac27bf4aa3cd9777735c9d7e7781f0ddf8a75b8be",
+      "license": "Licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license",
+      "license_refs": [
+        "https://creativecommons.org/licenses/by-sa/3.0/legalcode"
+      ],
+      "rows": 156431,
+      "chunks": [
+        {
+          "file": "zho-rus-0000.json",
+          "rows": 2000,
+          "sha256": "7c62cde752aad23875aae4825b5496b76c93c1a2b3b8f424c2e07479d7ea1df1"
+        },
+        {
+          "file": "zho-rus-0001.json",
+          "rows": 2000,
+          "sha256": "20363d17a752487a56511bac90d838c102101e9638521ce5a3e1f316a1badf74"
+        },
+        {
+          "file": "zho-rus-0002.json",
+          "rows": 2000,
+          "sha256": "c589e184ac09b5ebebee640706e99bb886cef863d7ba44f91e478d4a9174d70d"
+        },
+        {
+          "file": "zho-rus-0003.json",
+          "rows": 2000,
+          "sha256": "bb8083e266672aefb077a889f7b9d3b5aaf3c45f27514622dea9ab267eab08e5"
+        },
+        {
+          "file": "zho-rus-0004.json",
+          "rows": 2000,
+          "sha256": "e6982c561f1d9ff552bf488a694c3dd3d61d00bac8977b4dcbd6612dfd623f52"
+        },
+        {
+          "file": "zho-rus-0005.json",
+          "rows": 2000,
+          "sha256": "4dd84d929213d7f5c54a659cc88094719c41f83e95051a35b15d247865b45b6e"
+        },
+        {
+          "file": "zho-rus-0006.json",
+          "rows": 2000,
+          "sha256": "ae9cbadad78cd4bdb4681c16cb1f5fa833f3260db64c5b4ba8a03cabb3a5ffe9"
+        },
+        {
+          "file": "zho-rus-0007.json",
+          "rows": 2000,
+          "sha256": "ef73f124ed50407c884ed78c78227d6e74450568ed161cc467f042a2dde20860"
+        },
+        {
+          "file": "zho-rus-0008.json",
+          "rows": 2000,
+          "sha256": "bc8084c31713098a500f654b92b044366572a32b451724625746b201e0f95324"
+        },
+        {
+          "file": "zho-rus-0009.json",
+          "rows": 2000,
+          "sha256": "cb446afedacd2d47e672aad2cbfcd3c58645d192e8f4b4f6df630e858e594987"
+        },
+        {
+          "file": "zho-rus-0010.json",
+          "rows": 2000,
+          "sha256": "455f517415097b7519c5f1ea9cdb36e92817c22e10c6061cb9283eb1a20cb236"
+        },
+        {
+          "file": "zho-rus-0011.json",
+          "rows": 2000,
+          "sha256": "e29a9f15e790bb2c2007c95a33c7484e2044688fc0d9ed29e0bd07be1361591d"
+        },
+        {
+          "file": "zho-rus-0012.json",
+          "rows": 2000,
+          "sha256": "089cdde9d602b7d07c3fd50e27fbedc044544007d0f1ac211b4cde7b63b94f62"
+        },
+        {
+          "file": "zho-rus-0013.json",
+          "rows": 2000,
+          "sha256": "d765024eca3b0f880e69e79aeb8ec470c43278f45ffc03c536a48cb5dd031687"
+        },
+        {
+          "file": "zho-rus-0014.json",
+          "rows": 2000,
+          "sha256": "67da978aa03195bb47590bca2dcaac42984c445d95e64156d67c336272269fcc"
+        },
+        {
+          "file": "zho-rus-0015.json",
+          "rows": 2000,
+          "sha256": "34817809e7a9576892121417c6eb8a6ca42cf9e1ed0a27043f4a72e4c0fb4a5c"
+        },
+        {
+          "file": "zho-rus-0016.json",
+          "rows": 2000,
+          "sha256": "5ab8339f9d44d915495d35c62ae4a8f4c91f418e0103d80dc17bd8facf1c21c7"
+        },
+        {
+          "file": "zho-rus-0017.json",
+          "rows": 2000,
+          "sha256": "5aca65a4fbfe49419d601fae176a38a5061ebe6b399291c7a145a6ab260c68e6"
+        },
+        {
+          "file": "zho-rus-0018.json",
+          "rows": 2000,
+          "sha256": "178060889ea9f8dc89053c532962907ecf9ff9c19cc1c0115ec33a0d514d996f"
+        },
+        {
+          "file": "zho-rus-0019.json",
+          "rows": 2000,
+          "sha256": "7e3be416df1f030911bed0e84f1c4dc2e342223e3ecc47dbb15230509d799f1f"
+        },
+        {
+          "file": "zho-rus-0020.json",
+          "rows": 2000,
+          "sha256": "1f671c9b5fbe882c18ccf450c2cad555ebadc25dce8bf0d3f1a9b0d5e13174a6"
+        },
+        {
+          "file": "zho-rus-0021.json",
+          "rows": 2000,
+          "sha256": "032304bfda7d3b23b1a4199189b24660f9e76d6107d1de4750682d57d4deca52"
+        },
+        {
+          "file": "zho-rus-0022.json",
+          "rows": 2000,
+          "sha256": "1755504948c255f0dbae6c05bb45f15caa9e4c5f599b249345fb57782356a40f"
+        },
+        {
+          "file": "zho-rus-0023.json",
+          "rows": 2000,
+          "sha256": "ffb25821c637d93e50ebfd17cf39a94d3e13867e0f3f060fb6f346f638901654"
+        },
+        {
+          "file": "zho-rus-0024.json",
+          "rows": 2000,
+          "sha256": "055d4fe9d08c9aba9debca5ab1d91663ea3666745ba2754692a74629b74dc8c4"
+        },
+        {
+          "file": "zho-rus-0025.json",
+          "rows": 2000,
+          "sha256": "5abf83a52849a9c816ecba512636a36301d5035483116c57cc367642ee4c0d17"
+        },
+        {
+          "file": "zho-rus-0026.json",
+          "rows": 2000,
+          "sha256": "a39fc8c318ec07292c0278ca03b88b7a3663ef1f55fb7963adb953980698ef10"
+        },
+        {
+          "file": "zho-rus-0027.json",
+          "rows": 2000,
+          "sha256": "a89490027a69e56edc6e5572242a3c21d80ea9483e8bc0782e8c5a48e2d5e0ec"
+        },
+        {
+          "file": "zho-rus-0028.json",
+          "rows": 2000,
+          "sha256": "bcbb64f3201ec341802a3ce7561f9e72e9dd5f589dabfa231427a3189c0531c8"
+        },
+        {
+          "file": "zho-rus-0029.json",
+          "rows": 2000,
+          "sha256": "63a52a1002d590bfb3f950b211ec85ea2f7b8f70e53350d5a53357a0e1fca64e"
+        },
+        {
+          "file": "zho-rus-0030.json",
+          "rows": 2000,
+          "sha256": "a24ca3295112750539dc1410c28549bdc8ee8740a8e23d37895279912a58d18f"
+        },
+        {
+          "file": "zho-rus-0031.json",
+          "rows": 2000,
+          "sha256": "9aa6eb8c2294aa4d532080b5577f1f510b16b62a891fcf7e376d7578b95528f0"
+        },
+        {
+          "file": "zho-rus-0032.json",
+          "rows": 2000,
+          "sha256": "f64cd0df9e60447f056f161da9940b6d803766db7e9ff751166ee9fc4d39beba"
+        },
+        {
+          "file": "zho-rus-0033.json",
+          "rows": 2000,
+          "sha256": "54f84ceb4400ae45d6b07745c042ecb5235cf27c0965746e4a89df5c591f4c3a"
+        },
+        {
+          "file": "zho-rus-0034.json",
+          "rows": 2000,
+          "sha256": "ee2a6bbd052982bb845eba4c94bfa3d1ad4192559baa7e354280f6e7dbe76d62"
+        },
+        {
+          "file": "zho-rus-0035.json",
+          "rows": 2000,
+          "sha256": "e2bf2e9e372513da1e118241630fd9d444686376197e45e5bc546a6140a04840"
+        },
+        {
+          "file": "zho-rus-0036.json",
+          "rows": 2000,
+          "sha256": "74939ecf5708360aa30c0481a50b3adf96bb039e21e1ddf95f52a8805adbdf20"
+        },
+        {
+          "file": "zho-rus-0037.json",
+          "rows": 2000,
+          "sha256": "6eca066336d9a086916ac96bcb899cf40d31eb365366de313a28df26eb883d91"
+        },
+        {
+          "file": "zho-rus-0038.json",
+          "rows": 2000,
+          "sha256": "dca3e0903267a9f0c5d132a421bbdc7f02212a0bb30649a3e99cc8bfc30376ad"
+        },
+        {
+          "file": "zho-rus-0039.json",
+          "rows": 2000,
+          "sha256": "02737e91b1a86892d6530d0dd9ca03c1ffeafa2423a38428112b447ac9fe51ab"
+        },
+        {
+          "file": "zho-rus-0040.json",
+          "rows": 2000,
+          "sha256": "5ee3294cd73f009ffe74b2c5abe2a38d4c0be16b50bfc2ec524d86fabecd4ef1"
+        },
+        {
+          "file": "zho-rus-0041.json",
+          "rows": 2000,
+          "sha256": "17fb0608dbd0a04525ac7ab5fa9d8f952ef76b9b172702d4b5ac7d75073e8826"
+        },
+        {
+          "file": "zho-rus-0042.json",
+          "rows": 2000,
+          "sha256": "6d78e57ea2d07993d5c523a02a832b0580f2d5bb00cfd31af347193ac8b179d9"
+        },
+        {
+          "file": "zho-rus-0043.json",
+          "rows": 2000,
+          "sha256": "bdd421d3368e8886ae72a6b50c61d22837bc1231d7acfa414a0438b5c1ea3aa5"
+        },
+        {
+          "file": "zho-rus-0044.json",
+          "rows": 2000,
+          "sha256": "be19dc552ad55ab50249917b2f1a3bdc5e192e584b73c66ffc0633389c61f98a"
+        },
+        {
+          "file": "zho-rus-0045.json",
+          "rows": 2000,
+          "sha256": "7ab7f8c9d57208e732413f9636aea3931ebe500eaa19642fc41b35dcc37fe3a3"
+        },
+        {
+          "file": "zho-rus-0046.json",
+          "rows": 2000,
+          "sha256": "9e977d691c136f8c51d89595a9652865f54804629abe7f1fa922050f32611755"
+        },
+        {
+          "file": "zho-rus-0047.json",
+          "rows": 2000,
+          "sha256": "fdb7e3a496d6a2fe68ec9bf85cd42cbc64ea9b8a67748c8277eaf3c9c463ceae"
+        },
+        {
+          "file": "zho-rus-0048.json",
+          "rows": 2000,
+          "sha256": "77110c64b4307c7f47319dc494ad3c88c6905ae639d2719240e25d076e0c388b"
+        },
+        {
+          "file": "zho-rus-0049.json",
+          "rows": 2000,
+          "sha256": "230b3c559b7cafcff7552130d0049e83be573da9931d9a036cc61a5f7e559d4c"
+        },
+        {
+          "file": "zho-rus-0050.json",
+          "rows": 2000,
+          "sha256": "355fb2c5c33717fc3e25da8463de7bf578d0d94de1a1db2d4b3da1f2ea017593"
+        },
+        {
+          "file": "zho-rus-0051.json",
+          "rows": 2000,
+          "sha256": "2c4f0c3c4ada7e7bf39c91b8141c9a62745020876fd6334f72f906b8ee503ae5"
+        },
+        {
+          "file": "zho-rus-0052.json",
+          "rows": 2000,
+          "sha256": "d1042843ccb150ea824f108a330825d7a0048908120d9bd2deac73dc2a4f9392"
+        },
+        {
+          "file": "zho-rus-0053.json",
+          "rows": 2000,
+          "sha256": "cba2e8b0eafdb326deb23c5506053db6d47a72e77a18c3784288d024d6f99f9e"
+        },
+        {
+          "file": "zho-rus-0054.json",
+          "rows": 2000,
+          "sha256": "c2808f07eeed2ff68df7f65fe3e1da7a2a21eb0b78dfc087ddb43a0f20bc9b6c"
+        },
+        {
+          "file": "zho-rus-0055.json",
+          "rows": 2000,
+          "sha256": "664f340aea6c7503d5298a9eef41e0ff1ca366b0df15fc76c2a76d9b63395733"
+        },
+        {
+          "file": "zho-rus-0056.json",
+          "rows": 2000,
+          "sha256": "d9051f448ae53d6c97ac45d840726e7c4be70f559dd5f028ca6c5c0cd0ec8e1b"
+        },
+        {
+          "file": "zho-rus-0057.json",
+          "rows": 2000,
+          "sha256": "25dc177662dda7a263bf762aafba15c25a7d0595ad6b3f1be0ea67ef4c56858d"
+        },
+        {
+          "file": "zho-rus-0058.json",
+          "rows": 2000,
+          "sha256": "6098e637a7e9c9604e975ac1f1cddd1f5d005206aee694bf892a211fbc5e25ec"
+        },
+        {
+          "file": "zho-rus-0059.json",
+          "rows": 2000,
+          "sha256": "7241767b66b759ed6b561d6dd56613a0c7536eb9854902eb2e928ac1d44db153"
+        },
+        {
+          "file": "zho-rus-0060.json",
+          "rows": 2000,
+          "sha256": "610c2f1fe86d60598cb987f2d1489c4e6bee6358beca21eb2e22e6c91ccaa161"
+        },
+        {
+          "file": "zho-rus-0061.json",
+          "rows": 2000,
+          "sha256": "cea11ca6729a76ca4c3e1ed51e65a7c927f6d885d17045e797b986439f074470"
+        },
+        {
+          "file": "zho-rus-0062.json",
+          "rows": 2000,
+          "sha256": "dac57c2e3c00e9257e3c19d49b6503136912f97a43718228ea9a60789731fbd0"
+        },
+        {
+          "file": "zho-rus-0063.json",
+          "rows": 2000,
+          "sha256": "9eb0c5abab04c81997093a7ab10c01656cd12dbcf5471609e83c36cffbcf8fdc"
+        },
+        {
+          "file": "zho-rus-0064.json",
+          "rows": 2000,
+          "sha256": "d67f6b29fd0c92011edac6f7db4d664fa5844e81df43bdb10b24eec7f9f99c5e"
+        },
+        {
+          "file": "zho-rus-0065.json",
+          "rows": 2000,
+          "sha256": "82494b3ecc9baf4361acaa43ad277a3810cd84d2ccdbb49c91775be9c3c354aa"
+        },
+        {
+          "file": "zho-rus-0066.json",
+          "rows": 2000,
+          "sha256": "7337282e8947a21e8719425458f9af0dad87d435d208c84dd85134c104b42adb"
+        },
+        {
+          "file": "zho-rus-0067.json",
+          "rows": 2000,
+          "sha256": "867d7dc2048043fe896ff669bc9f0e62855b241bea68129cb8714c7425d3d2ae"
+        },
+        {
+          "file": "zho-rus-0068.json",
+          "rows": 2000,
+          "sha256": "337d6a960fe61909c15846d9ec22a282a273e4b28017f50532c31ba848d50e06"
+        },
+        {
+          "file": "zho-rus-0069.json",
+          "rows": 2000,
+          "sha256": "ba46858bfd6ebd53b925268aa597b5dac1ce6ec60798e570ab4d8604c36f4aa3"
+        },
+        {
+          "file": "zho-rus-0070.json",
+          "rows": 2000,
+          "sha256": "161624243203395a8d7f6c9c0f7b21f0401d1597b3484ac43fae37dd85cb135a"
+        },
+        {
+          "file": "zho-rus-0071.json",
+          "rows": 2000,
+          "sha256": "670a85f2316fc31a5dd81eb1d9ba12f3cb7a5cc60c298ac5381df21fc3d5d876"
+        },
+        {
+          "file": "zho-rus-0072.json",
+          "rows": 2000,
+          "sha256": "1a15c6c22723d6a90fcd7d85cbe2e71d1bf8f7b9bb521fadb7a5f70b35c5962f"
+        },
+        {
+          "file": "zho-rus-0073.json",
+          "rows": 2000,
+          "sha256": "53235b74c8fa6366359db90bea07926e02ef54974476c893edf3ba567525decc"
+        },
+        {
+          "file": "zho-rus-0074.json",
+          "rows": 2000,
+          "sha256": "427e76f5fcace08de0ba7dc8953a513c5069d7b49d7a866e4ffe919d2ad37f3f"
+        },
+        {
+          "file": "zho-rus-0075.json",
+          "rows": 2000,
+          "sha256": "7c1208f450ade604174377d2182b7152ebd6158c4d659fb59119649dcaaf14c6"
+        },
+        {
+          "file": "zho-rus-0076.json",
+          "rows": 2000,
+          "sha256": "335b1a8548f6b0dc0b150519f668a7c9e737cfcf8bdc2e3a5646122f43226b7f"
+        },
+        {
+          "file": "zho-rus-0077.json",
+          "rows": 2000,
+          "sha256": "c803c42a1fb66242362a7dd4702f47161bba1a13423423bd04f9d5e1a4b01cb4"
+        },
+        {
+          "file": "zho-rus-0078.json",
+          "rows": 431,
+          "sha256": "48827b32675ba6fef4f67b85823cfcfe5b5d60f8210656299d4c8792d700b9a4"
+        }
+      ]
+    },
+    {
+      "pair": "eng-rus",
+      "lang": "en",
+      "source_id": "freedict_eng-rus_2025.11.23",
+      "url": "https://download.freedict.org/dictionaries/eng-rus/2025.11.23/freedict-eng-rus-2025.11.23.src.tar.xz",
+      "sha512": "fdee5ebdbe59c2a4293b875def3befdfddd990f95ecd10eb289eff22d815ed6d31267ca4695af66811ef368dd72b16342210475e044c995831e7931ce0e4bcfe",
+      "license": "Licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license",
+      "license_refs": [
+        "https://creativecommons.org/licenses/by-sa/3.0/legalcode"
+      ],
+      "rows": 57476,
+      "chunks": [
+        {
+          "file": "eng-rus-0000.json",
+          "rows": 2000,
+          "sha256": "c49a73f4da667ff64d66efd4e1a18b0734bb24ae510d4a3c99c6170bfeb4a303"
+        },
+        {
+          "file": "eng-rus-0001.json",
+          "rows": 2000,
+          "sha256": "8bba7ee6cc3abf2d1d2e9212b017b32d4f3860fe066f6bb7505779891beec9fd"
+        },
+        {
+          "file": "eng-rus-0002.json",
+          "rows": 2000,
+          "sha256": "1ab20aa31bca94e6429c88d1e5fca1b9a00827e7fe335e7c1b2390f55d029b79"
+        },
+        {
+          "file": "eng-rus-0003.json",
+          "rows": 2000,
+          "sha256": "ea3635406edade7f098b37626d06dfd0a33702e9da9540a5b0c1b83895b1c516"
+        },
+        {
+          "file": "eng-rus-0004.json",
+          "rows": 2000,
+          "sha256": "12feb831ea504d11c50e0f81ab9345f71777afca96a332c5b4ae9caed6287684"
+        },
+        {
+          "file": "eng-rus-0005.json",
+          "rows": 2000,
+          "sha256": "3d907f4dc650f55f4f5eab7166b404ba26013ced335ed0614bc90c7300a08105"
+        },
+        {
+          "file": "eng-rus-0006.json",
+          "rows": 2000,
+          "sha256": "e695bc38e50d9dfc72a1d59851a85d4d3773a37ebe552323db3d17e97601a3d2"
+        },
+        {
+          "file": "eng-rus-0007.json",
+          "rows": 2000,
+          "sha256": "29014d3073658bd05759411b133f21a8f99f9dac58805b4e03706f738bc4c573"
+        },
+        {
+          "file": "eng-rus-0008.json",
+          "rows": 2000,
+          "sha256": "93cc503808c6536edc9484d4a688dedf99a365810655240c568f7ccb8bdbbd2c"
+        },
+        {
+          "file": "eng-rus-0009.json",
+          "rows": 2000,
+          "sha256": "c04b88f5bd3a0724a7170cbf31bfd227a3c985e9e4bc9c3c6c5891c27679ebe3"
+        },
+        {
+          "file": "eng-rus-0010.json",
+          "rows": 2000,
+          "sha256": "d594c92b1ef00e0a02408024baebc9cbacab359b7380ca1856fc4123b41ec25a"
+        },
+        {
+          "file": "eng-rus-0011.json",
+          "rows": 2000,
+          "sha256": "1bb12de27f74e92f70e9a89e15a09f5642ca8837e4acdd253a4a5735b1a04888"
+        },
+        {
+          "file": "eng-rus-0012.json",
+          "rows": 2000,
+          "sha256": "b7d3007a1df03c854146a9f306a24bb54d59aeaa760ad17b8cd5a951873b543a"
+        },
+        {
+          "file": "eng-rus-0013.json",
+          "rows": 2000,
+          "sha256": "637794e6aa4ca762c8501b974e1effdde5cc3e7cb0ac5568627e331446907f23"
+        },
+        {
+          "file": "eng-rus-0014.json",
+          "rows": 2000,
+          "sha256": "41183d53dd27d95f9ba9b1afe85b6f26a30d2687cac7a7f690ae7802cdf96ac2"
+        },
+        {
+          "file": "eng-rus-0015.json",
+          "rows": 2000,
+          "sha256": "b7ed333518f5b537d6a0803a04e01483afc284eedac9651d94073fbfb559360e"
+        },
+        {
+          "file": "eng-rus-0016.json",
+          "rows": 2000,
+          "sha256": "174a07a8b36fd7d654bbfcabdd8fc300f37695fa6c3822707862f028c3ac6c1e"
+        },
+        {
+          "file": "eng-rus-0017.json",
+          "rows": 2000,
+          "sha256": "65785f604ed79481e6cde4aa14d163b48639d18062b6687f3a814a1033b28c7a"
+        },
+        {
+          "file": "eng-rus-0018.json",
+          "rows": 2000,
+          "sha256": "2c0f69835c6dc69eea545ec79bcdc996be012995d66ee052f2f27042a4411515"
+        },
+        {
+          "file": "eng-rus-0019.json",
+          "rows": 2000,
+          "sha256": "97f06a28976cd054b16195f1959a899cd438231a937f65de241d0c80fbc61c6a"
+        },
+        {
+          "file": "eng-rus-0020.json",
+          "rows": 2000,
+          "sha256": "86804ea64d5c6e8c17237c451d6154248134a9ae4483b8f2510a51d740e73855"
+        },
+        {
+          "file": "eng-rus-0021.json",
+          "rows": 2000,
+          "sha256": "e0c65249fa3ef3e7bbfaf4b1579bc79a3782cdfa7329afa32de0f1158589e3ec"
+        },
+        {
+          "file": "eng-rus-0022.json",
+          "rows": 2000,
+          "sha256": "490ab4ded0270d16269065b1cba3a109475ac2976883ce5e2dfc76bfdda5af15"
+        },
+        {
+          "file": "eng-rus-0023.json",
+          "rows": 2000,
+          "sha256": "1b6daea72d2bf773904b16b6d1020cdbaa5f264a828a6238c1917573a70b500b"
+        },
+        {
+          "file": "eng-rus-0024.json",
+          "rows": 2000,
+          "sha256": "a0e58662d94a60e405802089d412fe3cdf23df6056b9659dc429aaee2e84c09f"
+        },
+        {
+          "file": "eng-rus-0025.json",
+          "rows": 2000,
+          "sha256": "12282192457036f3b5eab72c7e9a76df2fd7f6973f82a3a272736c4bf5f10e7a"
+        },
+        {
+          "file": "eng-rus-0026.json",
+          "rows": 2000,
+          "sha256": "d9121a333bf6ff474897c45a48ed597ba164ea8fad8f13c1070fc524fbe8d103"
+        },
+        {
+          "file": "eng-rus-0027.json",
+          "rows": 2000,
+          "sha256": "d244042e8f0e6d09d43b1922546b523ad979e73494aee573206a4e874d6aa130"
+        },
+        {
+          "file": "eng-rus-0028.json",
+          "rows": 1476,
+          "sha256": "786cc34d26ef2385545c22bfbf3987c93286722386fc38cde94aef26344a88a9"
+        }
+      ]
+    }
+  ]
+}
