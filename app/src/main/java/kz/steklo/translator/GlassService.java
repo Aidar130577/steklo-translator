@@ -18,7 +18,7 @@ import java.util.*;
 public final class GlassService extends AccessibilityService {
     private final TranslationSession session=new TranslationSession();
     private android.widget.TextView power;
-    private final Runnable unlockRefresh=()->{if(alive){syncForeground();}};
+    private final Runnable unlockRefresh=()->{if(this.alive){syncForeground();}};
     private android.content.BroadcastReceiver screenReceiver;
     private final Handler h=new Handler(Looper.getMainLooper());
     private final LruCache<String,String> cache=new LruCache<>(600);
