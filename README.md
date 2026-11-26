@@ -17,3 +17,6 @@ Adds English-to-Russian heuristic and separate local model, diagnostic long pres
 
 ### 0.1.6
 Bounded 3-task translation queue, immediate cached text, OCR reuse for unchanged accessible content, more precise OCR deduplication, merchant glossary and count templates, reject untranslated Han in ML output, vector power icon. Runtime quality/speed not yet measured. Longer translations may still not fit.
+
+### 0.1.7
+Read-only cloud trade glossary: fetch at service startup, cache public dictionary only for offline use, refresh at most once per day per service startup. Fixed URL, no screen data upload. Public Supabase publishable key only; RLS permits read of published rows and prohibits anonymous changes. Initial cloud seed: 75 trade entries. Full general dictionary import and validated translation quality remain pending.

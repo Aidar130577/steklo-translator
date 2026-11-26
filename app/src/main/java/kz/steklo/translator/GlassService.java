@@ -25,6 +25,7 @@ public final class GlassService extends AccessibilityService {
     private final Runnable scanTask=()->{scheduledAt=Long.MAX_VALUE;scan();};
     private final Runnable modelRetry=this::loadModel;
     private SharedPreferences prefs;
+    private CloudGlossary cloudGlossary;
     private WindowManager wm;
     private Layer layer;
     private Translator translator, englishTranslator;
@@ -65,6 +66,7 @@ public final class GlassService extends AccessibilityService {
         filter.addAction(android.content.Intent.ACTION_SCREEN_OFF);filter.addAction(android.content.Intent.ACTION_USER_PRESENT);
         if(Build.VERSION.SDK_INT>=33)registerReceiver(screenReceiver,filter,android.content.Context.RECEIVER_NOT_EXPORTED);
         else registerReceiver(screenReceiver,filter);
+        cloudGlossary=new CloudGlossary(this);cloudGlossary.start(()->{if(alive&&enabled()){invalidatePage();schedule(0);}});
         syncForeground();
     }
     private boolean unlocked(){
@@ -182,7 +184,7 @@ public final class GlassService extends AccessibilityService {
         return b.toString();
     }
     private BigDecimal currentRate(){try{return TradeText.parseRate(prefs.getString("rate",""));}catch(RuntimeException e){return null;}}
-    private String knownText(String source,BigDecimal rate){String text=TradeText.convert(source,rate);if(text==null)text=TradeText.exact(source);if(text==null)text=cache.get(source);return text;}
+    private String knownText(String source,BigDecimal rate){String text=TradeText.convert(source,rate);if(text==null&&cloudGlossary!=null)text=cloudGlossary.lookup(source);if(text==null)text=TradeText.exact(source);if(text==null)text=cache.get(source);return text;}
     private void clear(){if(layer!=null){layer.items=Collections.emptyList();layer.invalidate();}}
     private void ensureLayer(){
         if(layer!=null)return; Layer candidate=new Layer();
@@ -326,7 +328,7 @@ public final class GlassService extends AccessibilityService {
     private void finish(){busy=false;if(!alive)return;if(pending){pending=false;schedule(60);}else if(enabled())schedule(1500);}
     @Override public void onInterrupt(){session.stop();stopWork();updatePower();}
     @Override public void onDestroy(){alive=false;generation++;h.removeCallbacksAndMessages(null);if(prefs!=null&&listener!=null)prefs.unregisterOnSharedPreferenceChangeListener(listener);
-        session.stop();removePower();if(screenReceiver!=null){try{unregisterReceiver(screenReceiver);}catch(RuntimeException ignored){}screenReceiver=null;}
+        if(cloudGlossary!=null)cloudGlossary.close();session.stop();removePower();if(screenReceiver!=null){try{unregisterReceiver(screenReceiver);}catch(RuntimeException ignored){}screenReceiver=null;}
         if(layer!=null){try{wm.removeViewImmediate(layer);}catch(RuntimeException ignored){}layer=null;}
         if(translator!=null)translator.close();if(englishTranslator!=null)englishTranslator.close();if(recognizer!=null)recognizer.close();cache.evictAll();super.onDestroy();}
     private final class Layer extends View {
