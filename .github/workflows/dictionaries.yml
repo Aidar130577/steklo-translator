@@ -1,0 +1,35 @@
+name: Prepare licensed dictionaries
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/prepare_dictionaries.py'
+      - '.github/workflows/dictionaries.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download, verify and normalize
+        run: python3 scripts/prepare_dictionaries.py
+      - name: Publish normalized dictionary data branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          cp -r dictionary-export "$RUNNER_TEMP/dictionary-export"
+          rm -rf dictionary-export
+          git fetch origin dictionary-data || true
+          if git show-ref --verify --quiet refs/remotes/origin/dictionary-data; then
+            git switch -c dictionary-data --track origin/dictionary-data
+          else
+            git switch --orphan dictionary-data
+          fi
+          mkdir -p dictionary-export
+          cp -r "$RUNNER_TEMP/dictionary-export/." dictionary-export/
+          git add dictionary-export
+          git diff --cached --quiet || git commit -m "Publish licensed FreeDict translation equivalents"
+          git push origin HEAD:refs/heads/dictionary-data
