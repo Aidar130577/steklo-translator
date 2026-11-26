@@ -16,7 +16,10 @@ import java.util.*;
 
 /** Read-only accessibility service. No gesture injection, no screenshots on disk. */
 public final class GlassService extends AccessibilityService {
-    private static final Set<String> ALLOWED=new HashSet<>(Arrays.asList("com.xunmeng.pinduoduo","com.taobao.taobao","com.alibaba.wireless"));
+    private final TranslationSession session=new TranslationSession();
+    private android.widget.TextView power;
+    private final Runnable unlockRefresh=()->{if(alive){syncForeground();}};
+    private android.content.BroadcastReceiver screenReceiver;
     private final Handler h=new Handler(Looper.getMainLooper());
     private final LruCache<String,String> cache=new LruCache<>(600);
     private final Runnable scanTask=()->{scheduledAt=Long.MAX_VALUE;scan();};
@@ -41,17 +44,85 @@ public final class GlassService extends AccessibilityService {
         super.onServiceConnected(); alive=true; prefs=getSharedPreferences("glass",MODE_PRIVATE); wm=(WindowManager)getSystemService(WINDOW_SERVICE);
         translator=Translation.getClient(new TranslatorOptions.Builder().setSourceLanguage(TranslateLanguage.CHINESE).setTargetLanguage(TranslateLanguage.RUSSIAN).build());
         recognizer=TextRecognition.getClient(new ChineseTextRecognizerOptions.Builder().build());
-        listener=(p,k)->{h.post(()->{invalidatePage(); if(enabled()) {loadModel(); schedule(100);}});}; prefs.registerOnSharedPreferenceChangeListener(listener);
-        if(enabled()){loadModel();schedule(100);}
+        // Old versions persisted "enabled". Always require an explicit tap in the current app.
+        prefs.edit().remove("enabled").apply();
+        listener=(p,k)->{if("rate".equals(k))h.post(()->{invalidatePage(); if(enabled())schedule(0);});}; prefs.registerOnSharedPreferenceChangeListener(listener);
+        screenReceiver=new android.content.BroadcastReceiver(){
+            @Override public void onReceive(android.content.Context context,android.content.Intent intent){
+                if(android.content.Intent.ACTION_SCREEN_OFF.equals(intent.getAction())){session.updateForeground("");stopWork();removePower();}
+                else {h.removeCallbacks(unlockRefresh);h.postDelayed(unlockRefresh,300);}
+            }
+        };
+        android.content.IntentFilter filter=new android.content.IntentFilter();
+        filter.addAction(android.content.Intent.ACTION_SCREEN_OFF);filter.addAction(android.content.Intent.ACTION_USER_PRESENT);
+        if(Build.VERSION.SDK_INT>=33)registerReceiver(screenReceiver,filter,android.content.Context.RECEIVER_NOT_EXPORTED);
+        else registerReceiver(screenReceiver,filter);
+        syncForeground();
     }
-    private boolean enabled(){return alive&&prefs!=null&&prefs.getBoolean("enabled",false);}
+    private boolean unlocked(){
+        android.app.KeyguardManager km=(android.app.KeyguardManager)getSystemService(KEYGUARD_SERVICE);
+        android.os.PowerManager pm=(android.os.PowerManager)getSystemService(POWER_SERVICE);
+        return (km==null||!km.isKeyguardLocked())&&(pm==null||pm.isInteractive());
+    }
+    private boolean enabled(){return alive&&session.enabled()&&unlocked();}
+    private String foreground(){
+        if(!alive||!unlocked())return "";
+        AccessibilityNodeInfo root=null;
+        try{root=getRootInActiveWindow();return root==null?"":String.valueOf(root.getPackageName());}
+        catch(RuntimeException e){return "";}finally{if(root!=null)root.recycle();}
+    }
+    private void stopWork(){
+        generation++;pending=false;h.removeCallbacks(scanTask);scheduledAt=Long.MAX_VALUE;
+        h.removeCallbacks(modelRetry);clear();
+    }
+    private void syncForeground(){
+        String pkg=foreground();
+        if(session.updateForeground(pkg))stopWork();
+        if(session.supportedForeground()){
+            try{ensureLayer();ensurePower();updatePower();}catch(RuntimeException e){session.stop();stopWork();removePower();}
+        }else {clear();removePower();}
+    }
+    private int dp(float n){return Math.round(n*getResources().getDisplayMetrics().density);}
+    private void ensurePower(){
+        if(power!=null)return;
+        android.widget.TextView v=new android.widget.TextView(this);
+        v.setText("⏻");v.setTextSize(25);v.setTextColor(Color.WHITE);v.setGravity(Gravity.CENTER);
+        v.setClickable(true);v.setFocusable(false);v.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+        v.setOnClickListener(w->{
+            String pkg=foreground();
+            if(!session.isCurrent(pkg)||!session.supportedForeground()){syncForeground();return;}
+            if(session.enabled()){session.stop();stopWork();updatePower();}
+            else {session.start();stopWork();updatePower();loadModel();schedule(0);
+                if(!ready)android.widget.Toast.makeText(this,"Подготовка языковой модели. Первый запуск требует интернет.",android.widget.Toast.LENGTH_SHORT).show();}
+        });
+        WindowManager.LayoutParams p=new WindowManager.LayoutParams(dp(44),dp(44),WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,PixelFormat.TRANSLUCENT);
+        p.gravity=Gravity.TOP|Gravity.LEFT;p.x=dp(6);p.y=dp(6);wm.addView(v,p);power=v;
+    }
+    private void updatePower(){
+        if(power==null)return;
+        boolean on=enabled();
+        if(Boolean.valueOf(on).equals(power.getTag()))return;
+        power.setTag(on);
+        android.graphics.drawable.GradientDrawable bg=new android.graphics.drawable.GradientDrawable();
+        bg.setShape(android.graphics.drawable.GradientDrawable.OVAL);
+        bg.setColor(on?Color.rgb(22,163,74):Color.rgb(190,30,45));bg.setStroke(dp(2),Color.WHITE);
+        power.setBackground(bg);power.setContentDescription(on?"Остановить перевод":"Начать перевод");
+    }
+    private void removePower(){
+        if(power!=null){try{wm.removeViewImmediate(power);}catch(RuntimeException ignored){}power=null;}
+    }
     private void loadModel(){
         if(!enabled()||ready||loading||translator==null)return; loading=true;
         translator.downloadModelIfNeeded().addOnCompleteListener(t->{loading=false;if(!alive)return;ready=t.isSuccessful();if(ready)schedule(0);else if(enabled()){h.removeCallbacks(modelRetry);h.postDelayed(modelRetry,30000);}});
     }
     @Override public void onAccessibilityEvent(AccessibilityEvent e){
-        if(!enabled()){clear();return;}
         int type=e.getEventType();
+        boolean own=getPackageName().contentEquals(e.getPackageName()==null?"":e.getPackageName());
+        if(own && type!=AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED && type!=AccessibilityEvent.TYPE_WINDOWS_CHANGED)return;
+        syncForeground();
+        if(!enabled()){clear();return;}
+        if(own)return;
         if(type==AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED||type==AccessibilityEvent.TYPE_WINDOWS_CHANGED||type==AccessibilityEvent.TYPE_VIEW_SCROLLED||type==AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED){
             generation++;
             refreshKnown();
@@ -64,7 +135,7 @@ public final class GlassService extends AccessibilityService {
     private void refreshKnown(){
         AccessibilityNodeInfo root=null;
         try{root=getRootInActiveWindow();
-            if(root==null||!ALLOWED.contains(String.valueOf(root.getPackageName()))){clear();return;}
+            if(root==null||!session.isCurrent(String.valueOf(root.getPackageName()))){clear();return;}
             List<Item> items=new ArrayList<>();boolean[] sensitive={false};collect(root,items,sensitive,new int[]{0});
             if(sensitive[0]){clear();return;}
             BigDecimal rate=currentRate();List<Item> known=new ArrayList<>();
@@ -87,7 +158,7 @@ public final class GlassService extends AccessibilityService {
         try{
             root=getRootInActiveWindow(); if(root==null){invalidatePage();return;}
             String pkg=String.valueOf(root.getPackageName()); int win=root.getWindowId();
-            if(!ALLOWED.contains(pkg)){invalidatePage();lastPackage="";lastWindow=-1;return;}
+            if(!session.isCurrent(pkg)){invalidatePage();lastPackage="";lastWindow=-1;return;}
             if(!pkg.equals(lastPackage)||win!=lastWindow){invalidatePage();lastPackage=pkg;lastWindow=win;}
             List<Item> items=new ArrayList<>(); boolean[] sensitive={false}; collect(root,items,sensitive,new int[]{0});
             if(sensitive[0]){invalidatePage();return;}
@@ -172,12 +243,13 @@ public final class GlassService extends AccessibilityService {
         });}catch(RuntimeException e){finish();}
     }
     private void publish(List<Item> done,long token){
-        if(!enabled()||token!=generation)return;
+        if(!enabled()||token!=generation||!session.isCurrent(foreground()))return;
         try{ensureLayer();layer.items=new ArrayList<>(done);layer.invalidate();}catch(RuntimeException e){clear();}
     }
     private void finish(){busy=false;if(!alive)return;if(pending){pending=false;schedule(60);}else if(enabled())schedule(1500);}
-    @Override public void onInterrupt(){invalidatePage();}
+    @Override public void onInterrupt(){session.stop();stopWork();updatePower();}
     @Override public void onDestroy(){alive=false;generation++;h.removeCallbacksAndMessages(null);if(prefs!=null&&listener!=null)prefs.unregisterOnSharedPreferenceChangeListener(listener);
+        session.stop();removePower();if(screenReceiver!=null){try{unregisterReceiver(screenReceiver);}catch(RuntimeException ignored){}screenReceiver=null;}
         if(layer!=null){try{wm.removeViewImmediate(layer);}catch(RuntimeException ignored){}layer=null;}
         if(translator!=null)translator.close();if(recognizer!=null)recognizer.close();cache.evictAll();super.onDestroy();}
     private final class Layer extends View {
