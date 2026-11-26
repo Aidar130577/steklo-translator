@@ -26,6 +26,7 @@ public final class GlassService extends AccessibilityService {
     private final Runnable modelRetry=this::loadModel;
     private SharedPreferences prefs;
     private CloudGlossary cloudGlossary;
+    private GeneralCloud generalCloud;
     private WindowManager wm;
     private Layer layer;
     private Translator translator, englishTranslator;
@@ -66,6 +67,7 @@ public final class GlassService extends AccessibilityService {
         filter.addAction(android.content.Intent.ACTION_SCREEN_OFF);filter.addAction(android.content.Intent.ACTION_USER_PRESENT);
         if(Build.VERSION.SDK_INT>=33)registerReceiver(screenReceiver,filter,android.content.Context.RECEIVER_NOT_EXPORTED);
         else registerReceiver(screenReceiver,filter);
+        generalCloud=new GeneralCloud();
         cloudGlossary=new CloudGlossary(this);cloudGlossary.start(()->{if(alive&&enabled()){invalidatePage();schedule(0);}});
         syncForeground();
     }
@@ -184,7 +186,7 @@ public final class GlassService extends AccessibilityService {
         return b.toString();
     }
     private BigDecimal currentRate(){try{return TradeText.parseRate(prefs.getString("rate",""));}catch(RuntimeException e){return null;}}
-    private String knownText(String source,BigDecimal rate){String text=TradeText.convert(source,rate);if(text==null&&cloudGlossary!=null)text=cloudGlossary.lookup(source);if(text==null)text=TradeText.exact(source);if(text==null)text=cache.get(source);return text;}
+    private String knownText(String source,BigDecimal rate){String text=TradeText.convert(source,rate);if(text==null&&cloudGlossary!=null)text=cloudGlossary.lookup(source);if(text==null)text=TradeText.exact(source);if(text==null&&generalCloud!=null)text=generalCloud.lookup(source);if(text==null)text=cache.get(source);return text;}
     private void clear(){if(layer!=null){layer.items=Collections.emptyList();layer.invalidate();}}
     private void ensureLayer(){
         if(layer!=null)return; Layer candidate=new Layer();
@@ -277,6 +279,11 @@ public final class GlassService extends AccessibilityService {
     private void resolve(List<Item> items,long token){
         if(!alive||token!=generation){finish();return;}
         BigDecimal rate=currentRate();
+        if(generalCloud!=null){
+            Set<String> words=new LinkedHashSet<>();
+            for(Item i:items)if(TradeText.exact(i.source)==null&&(cloudGlossary==null||cloudGlossary.lookup(i.source)==null))words.add(i.source);
+            generalCloud.prefetch(words,()->{if(alive&&enabled())schedule(0);});
+        }
         List<Item> done=new ArrayList<>();List<Item> missing=new ArrayList<>();
         Set<String> seen=new HashSet<>();
         for(Item i:items){if(!seen.add(i.source+"@"+i.rect.toShortString()))continue;
@@ -328,7 +335,7 @@ public final class GlassService extends AccessibilityService {
     private void finish(){busy=false;if(!alive)return;if(pending){pending=false;schedule(60);}else if(enabled())schedule(1500);}
     @Override public void onInterrupt(){session.stop();stopWork();updatePower();}
     @Override public void onDestroy(){alive=false;generation++;h.removeCallbacksAndMessages(null);if(prefs!=null&&listener!=null)prefs.unregisterOnSharedPreferenceChangeListener(listener);
-        if(cloudGlossary!=null)cloudGlossary.close();session.stop();removePower();if(screenReceiver!=null){try{unregisterReceiver(screenReceiver);}catch(RuntimeException ignored){}screenReceiver=null;}
+        if(cloudGlossary!=null)cloudGlossary.close();if(generalCloud!=null)generalCloud.close();session.stop();removePower();if(screenReceiver!=null){try{unregisterReceiver(screenReceiver);}catch(RuntimeException ignored){}screenReceiver=null;}
         if(layer!=null){try{wm.removeViewImmediate(layer);}catch(RuntimeException ignored){}layer=null;}
         if(translator!=null)translator.close();if(englishTranslator!=null)englishTranslator.close();if(recognizer!=null)recognizer.close();cache.evictAll();super.onDestroy();}
     private final class Layer extends View {

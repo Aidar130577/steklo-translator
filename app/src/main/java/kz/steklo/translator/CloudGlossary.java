@@ -19,7 +19,7 @@ import java.util.concurrent.ExecutorService;
 /** Downloads public glossary only. No screen text, images, account information or user identifiers are sent. */
 public final class CloudGlossary implements AutoCloseable {
     private static final String URL_STRING="https://dwavxvkiuujonnolxqfs.supabase.co/rest/v1/steklo_dictionary?select=source_text,russian_text&category=eq.trade&published=eq.true&source_id=eq.steklo_glossary_v1&order=source_lang.asc,source_text.asc&limit=500";
-    private static final String PUBLIC_KEY="sb_publishable_sGK1V95mWzvTBNoZxEfS4Q_nVomlReJ";
+    static final String PUBLIC_KEY="sb_publishable_sGK1V95mWzvTBNoZxEfS4Q_nVomlReJ";
     private static final int MAX_BYTES=512*1024;
     private final SharedPreferences prefs;
     private final ExecutorService io=Executors.newSingleThreadExecutor();

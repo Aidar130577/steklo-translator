@@ -21,6 +21,7 @@ public class MainActivity extends Activity {
         EditText rate=new EditText(this); rate.setInputType(android.text.InputType.TYPE_CLASS_NUMBER|android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL); rate.setText(prefs.getString("rate","")); l.addView(rate);
         Button save=new Button(this); save.setText("Сохранить курс"); l.addView(save); save.setOnClickListener(v->{ String s=rate.getText().toString().trim(); try { if(!s.isEmpty()) s=TradeText.parseRate(s).toPlainString(); prefs.edit().putString("rate",s).apply(); Toast.makeText(this,"Сохранено",Toast.LENGTH_SHORT).show(); } catch(RuntimeException e){rate.setError("Введите положительный курс");}});
         TextView note=new TextView(this); note.setText("Android 14+: распознавание текста на изображениях. Android 10–13: только доступный текст интерфейса. Перевод при прокрутке может отставать. При переходе в другое приложение перевод выключается. Для полного отключения отключите службу в настройках Android."); l.addView(note);
+        TextView credits=new TextView(this);credits.setText("Облачные словари: FreeDict / WikDict / Wiktionary, CC BY-SA 3.0. Данные нормализованы, возможны неточности. При поиске отправляется только язык и короткий индекс словарного раздела, не сам текст экрана.\nИсточники: https://freedict.org/downloads/\nЛицензия: https://creativecommons.org/licenses/by-sa/3.0/");credits.setAutoLinkMask(android.text.util.Linkify.WEB_URLS);l.addView(credits);
         ScrollView scroll=new ScrollView(this); scroll.addView(l); setContentView(scroll);
     }
 }

@@ -19,9 +19,10 @@ jobs:
       - name: Pure Java tests
         run: |
           mkdir -p /tmp/steklo-tests
-          javac -encoding UTF-8 -d /tmp/steklo-tests app/src/main/java/kz/steklo/translator/TradeText.java app/src/main/java/kz/steklo/translator/TranslationSession.java tests/TradeTextTest.java tests/TranslationSessionTest.java
+          javac -encoding UTF-8 -d /tmp/steklo-tests app/src/main/java/kz/steklo/translator/TradeText.java app/src/main/java/kz/steklo/translator/TranslationSession.java tests/TradeTextTest.java tests/TranslationSessionTest.java app/src/main/java/kz/steklo/translator/DictionaryLookup.java tests/DictionaryLookupTest.java
           java -cp /tmp/steklo-tests TradeTextTest
           java -cp /tmp/steklo-tests TranslationSessionTest
+          java -cp /tmp/steklo-tests DictionaryLookupTest
       - name: Build and lint
         run: gradle --no-daemon :app:assembleDebug :app:lintDebug
       - uses: actions/upload-artifact@v4

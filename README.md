@@ -20,3 +20,6 @@ Bounded 3-task translation queue, immediate cached text, OCR reuse for unchanged
 
 ### 0.1.7
 Read-only cloud trade glossary: fetch at service startup, cache public dictionary only for offline use, refresh at most once per day per service startup. Fixed URL, no screen data upload. Public Supabase publishable key only; RLS permits read of published rows and prohibits anonymous changes. Initial cloud seed: 75 trade entries. Full general dictionary import and validated translation quality remain pending.
+
+### 0.1.8
+Cloud data: 156431 zh and 57476 en normalized FreeDict entries, 297 project trade phrases. CC BY-SA 3.0; sources and checksum manifest: dictionary-data branch. Fetches only public language/hash-prefix shards, with short-term memory cache, bounded queue and local fallback. Does not send whole screen text. Traditional Chinese alias attempt via ICU. Only short exact entries with a single clean equivalent are considered, general dictionary is not full sentence translator and has imperfect upstream glosses. Real latency and device behavior pending.
