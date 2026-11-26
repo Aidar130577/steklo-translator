@@ -8,3 +8,6 @@ APK: app/build/outputs/apk/debug/app-debug.apk. GitHub Actions: Android debug AP
 
 ### 0.1.2
 Плавающая кнопка питания 44 dp слева сверху: красная — выключено, зелёная — включено. Только поддерживаемые магазины и браузеры. При смене приложения, блокировке экрана или перезапуске службы перевод выключается. Зелёный означает запрос перевода, а не гарантию загрузки модели. Только маленькая кнопка принимает касания; слой перевода не принимает касания. Добавлены 24 проверки состояния сеанса. Установка и реальные жесты ещё требуют испытаний.
+
+### 0.1.3
+Fix multiline layout and avoid invalidation from non-Chinese timer changes; show model loading/error status. Amber during loading/error, green only once ready, red off. Long translations that do not fit remain original. Real Pinduoduo tests pending; timer-related starvation is a code-level risk, not a proven device diagnosis.
